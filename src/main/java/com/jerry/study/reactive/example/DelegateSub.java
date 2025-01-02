@@ -4,11 +4,11 @@ import java.util.concurrent.Flow.Subscriber;
 
 import static java.util.concurrent.Flow.*;
 
-public abstract class DelegateSub<T> implements Subscriber<T> {
+public abstract class DelegateSub<T, R> implements Subscriber<T> {
 
     Subscriber sub;
 
-    public DelegateSub(Subscriber<? super T> sub) {
+    public DelegateSub(Subscriber<? super R> sub) {
         this.sub = sub;
     }
 

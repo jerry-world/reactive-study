@@ -2,7 +2,6 @@ package com.jerry.study.reactive.example;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Flow;
 import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
@@ -21,10 +20,13 @@ public class Operator {
     public static void main(String[] args) {
 
         Publisher<Integer> publisher = getPublisher(Stream.iterate(1, a -> a + 1).limit(10).toList());
-        Publisher<Integer> mapPub = mapPub(publisher, s -> s * 10);
+//        Publisher<Integer> mapPub = mapPub(publisher, s -> s * 10);
 //        Publisher<Integer> sumPub = sumPub(publisher);
 //        Publisher<Integer> reducePub = reducePub(publisher, 0, (a, b) -> a + b);
-        mapPub.subscribe(logSub());
+//        Publisher<String> mapPub = mapPub(publisher, s -> "[" + s + "]");
+//        Publisher<String> reducePub = reducePub(publisher, "", (a, b) -> a + "-" + b);
+        Publisher<StringBuilder> reducePub = reducePub(publisher, new StringBuilder(), (a, b) -> a.append(b + ","));
+        reducePub.subscribe(logSub());
 
     }
 
@@ -34,30 +36,30 @@ public class Operator {
     // (1,2) -> 1+2 = 3
     // (3,3) -> 3+3 = 6
     // ...
-//    private static Publisher<Integer> reducePub(Publisher<Integer> pub, int init , BiFunction<Integer, Integer, Integer> bf) {
-//        return new Publisher<Integer>() {
-//            @Override
-//            public void subscribe(Subscriber<? super Integer> sub) {
-//                pub.subscribe(new DelegateSub(sub) {
-//
-//                    int result = init;
-//
-//                    @Override
-//                    public void onNext(Integer item) {
-//                        result = (bf.apply(result, item));
-//                    }
-//
-//                    @Override
-//                    public void onComplete() {
-//                        sub.onNext(result);
-//                        super.onComplete();
-//                    }
-//                });
-//            }
-//
-//
-//        };
-//    }
+    private static <T, R> Publisher<R> reducePub(Publisher<T> pub, R init, BiFunction<R, T, R> bf) {
+        return new Publisher<R>() {
+            @Override
+            public void subscribe(Subscriber<? super R> sub) {
+                pub.subscribe(new DelegateSub<T, R>(sub) {
+
+                    R result = init;
+
+                    @Override
+                    public void onNext(T item) {
+                        result = (bf.apply(result, item));
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        sub.onNext(result);
+                        super.onComplete();
+                    }
+                });
+            }
+
+
+        };
+    }
 
 
 //    private static Publisher<Integer> sumPub(Publisher<Integer> publisher) {
@@ -82,14 +84,14 @@ public class Operator {
 //        };
 //    }
 
-    private static <T> Publisher<T> mapPub(Publisher<T> pub, Function<T, T> f) {
-        return new Publisher<T>() {
+    private static <T, R> Publisher<R> mapPub(Publisher<T> pub, Function<T, R> f) {
+        return new Publisher<R>() {
             @Override
-            public void subscribe(Subscriber<? super T> sub) {
-                pub.subscribe(new DelegateSub<T>(sub) {
+            public void subscribe(Subscriber<? super R> sub) {
+                pub.subscribe(new DelegateSub<T, R>(sub) {
                     @Override
                     public void onNext(T item) {
-                        super.onNext(f.apply(item));
+                        super.onNext((T) f.apply(item));
                     }
                 });
             }
