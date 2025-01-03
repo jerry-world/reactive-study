@@ -1,4 +1,4 @@
-package com.jerry.study.reactive.example;
+package com.jerry.study.reactive.basic;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;

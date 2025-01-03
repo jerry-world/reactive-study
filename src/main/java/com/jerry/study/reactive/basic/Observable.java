@@ -1,4 +1,4 @@
-package com.jerry.study.reactive.example;
+package com.jerry.study.reactive.basic;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
