@@ -7,8 +7,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 
+import java.io.IOException;
+import java.util.Queue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,8 +26,51 @@ public class ReactiveApplication {
     @RequiredArgsConstructor
     public static class MyController {
 
+        Queue<DeferredResult<String>> results = new ConcurrentLinkedQueue<>();
+
+        //emitter
+        @GetMapping("/emitter")
+        public ResponseBodyEmitter emitter() {
+            ResponseBodyEmitter emitter = new ResponseBodyEmitter();
+
+            Executors.newSingleThreadExecutor().submit(() -> {
+                try {
+                    for (int i = 1; i <= 50; i++) {
+                        emitter.send("<p> Stream " + i + "</p>");
+                        Thread.sleep(2000);
+                    }
+                } catch (Exception ignoredE) {}
+            });
+
+            return emitter;
+        }
+
+        //Deferred Result
+        @GetMapping("/dr")
+        public DeferredResult<String> deferredResult() {
+            log.info("deferredResult");
+
+            DeferredResult<String> deferredResult = new DeferredResult<>(600000L);
+            results.add(deferredResult);
+            return deferredResult;
+        }
+
+        @GetMapping("/dr/count")
+        public String drCount() {
+            return String.valueOf(results.size());
+        }
+
+        @GetMapping("/dr/event")
+        public String drEvent(String msg) {
+            for (DeferredResult<String> dr : results) {
+                dr.setResult("Hello " + msg);
+                results.remove(dr);
+            }
+            return "OK";
+        }
+
         @GetMapping("/callable")
-        public Callable<String> async() throws InterruptedException {
+        public Callable<String> callable() throws InterruptedException {
             log.info("callable");
 
             return () -> {
