@@ -22,8 +22,6 @@ import java.util.concurrent.Executors;
 @SpringBootApplication
 public class ReactiveApplication {
 
-
-
     public static void main(String[] args) {
         SpringApplication.run(ReactiveApplication.class, args);
     }
