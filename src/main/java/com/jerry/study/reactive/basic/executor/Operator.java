@@ -7,6 +7,7 @@ import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Operator {
@@ -19,7 +20,7 @@ public class Operator {
 
     public static void main(String[] args) {
 
-        Publisher<Integer> publisher = getPublisher(Stream.iterate(1, a -> a + 1).limit(10).toList());
+        Publisher<Integer> publisher = getPublisher(Stream.iterate(1, a -> a + 1).limit(10).collect(Collectors.toList()));
 //        Publisher<Integer> mapPub = mapPub(publisher, s -> s * 10);
 //        Publisher<Integer> sumPub = sumPub(publisher);
 //        Publisher<Integer> reducePub = reducePub(publisher, 0, (a, b) -> a + b);

@@ -3,6 +3,7 @@ package com.jerry.study.reactive.basic.executor;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Flow;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.concurrent.Flow.*;
@@ -12,7 +13,7 @@ public class PubSub {
 
     public static void main(String[] args) {
 
-        Publisher<Integer> publisher = getPublisher(Stream.iterate(1, a -> a + 1).limit(10).toList());
+        Publisher<Integer> publisher = getPublisher(Stream.iterate(1, a -> a + 1).limit(10).collect(Collectors.toList()));
         Subscriber<Integer> subscriber = logSub();
 
         publisher.subscribe(subscriber);

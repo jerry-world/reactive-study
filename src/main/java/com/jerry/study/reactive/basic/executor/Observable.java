@@ -54,7 +54,7 @@ public class Observable {
 
     public static void main(String[] args) {
 //        Observable : Source(이벤트 소스) -> Event(뭔가 상황이 발생했을 때 타겟인 옵저버에게 해당 상황을 던져준다.)
-        java.util.Observer ob1 = (_, arg) -> { //notifyObservers 가 호출되면 Observable에 등록된 Observer에게 전달
+        java.util.Observer ob1 = (observable, arg) -> { //notifyObservers 가 호출되면 Observable에 등록된 Observer에게 전달
             System.out.println(Thread.currentThread().getName() + " " + arg);
         };
 
