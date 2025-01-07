@@ -1,4 +1,4 @@
-package com.jerry.study.reactive.basic.executor;
+package com.jerry.study.reactive.executor;
 
 import reactor.core.publisher.Flux;
 

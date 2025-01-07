@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.context.request.async.DeferredResult;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 @SuppressWarnings("deprecation")
 @RequiredArgsConstructor
 @RestController
@@ -23,12 +26,13 @@ public class Controller {
 //    RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/rest")
-    public DeferredResult<String> rest(int idx) {
+    public DeferredResult<String> rest(int idx) throws ExecutionException, InterruptedException {
 //        String res = restTemplate.getForObject("http://localhost:8081/remote?req={req}", String.class, "hello" + idx);
 //        return res;
 
         DeferredResult<String> dr = new DeferredResult<>();
 
+        //Callback Hell 탈출하기
         Completion
                 .from(art.getForEntity("http://localhost:8081/remote?req={req}", String.class, "h" + idx))
                 .andApply(s -> art.getForEntity("http://localhost:8081/remote2?req={req}", String.class, s.getBody()))

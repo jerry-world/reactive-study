@@ -25,7 +25,6 @@ public class LoadTest {
         for (int i = 0; i < 100; i++) {
             es.submit(() -> {
                 int idx = counter.addAndGet(1);
-
                 cyclicBarrier.await();
                 log.info("Thread {}", idx);
 
@@ -33,7 +32,6 @@ public class LoadTest {
                 sw.start();
                 String res = restTemplate.getForObject(url, String.class, idx);
                 sw.stop();
-
                 log.info("Elasped: {} -> {} / {}", idx, sw.getTotalTimeSeconds(), res);
                 return null; // Callable Interface 를 구현한 Lambda로 추론
             });
