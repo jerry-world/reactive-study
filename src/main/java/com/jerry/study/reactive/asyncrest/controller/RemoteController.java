@@ -8,13 +8,14 @@ public class RemoteController {
 
     @GetMapping("/remote")
     public String remote(String req) throws InterruptedException {
-        Thread.sleep(2000);
-        return req + "/service";
+        Thread.sleep(100);
+//        throw new RuntimeException();
+        return req + "/service1";
     }
 
     @GetMapping("/remote2")
     public String remote2(String req) throws InterruptedException {
-        Thread.sleep(2000);
+        Thread.sleep(100);
         return req + "/service2";
     }
 }

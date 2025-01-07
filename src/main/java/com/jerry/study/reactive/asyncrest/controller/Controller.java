@@ -1,11 +1,10 @@
 package com.jerry.study.reactive.asyncrest.controller;
 
+import com.jerry.study.reactive.asyncrest.completion.Completion;
 import com.jerry.study.reactive.asyncrest.service.Service;
 import io.netty.channel.nio.NioEventLoopGroup;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.Netty4ClientHttpRequestFactory;
-import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.AsyncRestTemplate;
@@ -29,28 +28,33 @@ public class Controller {
 //        return res;
 
         DeferredResult<String> dr = new DeferredResult<>();
-        ListenableFuture<ResponseEntity<String>> f1 = art.getForEntity("http://localhost:8081/remote?req={req}", String.class, "hello " + idx);
-        f1.addCallback(
-                s -> {
-                    ListenableFuture<ResponseEntity<String>> f2 = art.getForEntity("http://localhost:8081/remote2?req={req}", String.class, "hello" + idx);
-                    f2.addCallback(
-                            s2 -> {
-                                ListenableFuture<String> f3 = service.work("");
-                                f3.addCallback(
-                                        dr::setResult,
-                                        e3 -> dr.setErrorResult(e3.getMessage())
-                                );
-                            },
-                            e2 -> {
-                                dr.setErrorResult(e2.getMessage());
-                            }
-                    );
 
-                },
-                e -> {
-                    dr.setErrorResult(e.getMessage());
-                }
-        );
+        Completion
+                .from(art.getForEntity("http://localhost:8081/remote?req={req}", String.class, "h" + idx))
+                .andApply(s -> art.getForEntity("http://localhost:8081/remote2?req={req}", String.class, s.getBody()))
+                .andApply(s -> service.work(s.getBody()))
+                .andError(e -> dr.setErrorResult(e.toString()))
+                .andAccept(dr::setResult); // Consumer Interface 를 구현한.
+
+
+//        ListenableFuture<ResponseEntity<String>> f1 = art.getForEntity("http://localhost:8081/remote?req={req}", String.class, "hello " + idx);
+//        f1.addCallback(
+//                s1 -> {
+//                    ListenableFuture<ResponseEntity<String>> f2 = art.getForEntity("http://localhost:8081/remote2?req={req}", String.class, s1.getBody());
+//                    f2.addCallback(
+//                            s2 -> {
+//                                ListenableFuture<String> f3 = service.work("");
+//                                f3.addCallback(
+//                                        dr::setResult,
+//                                        e3 -> dr.setErrorResult(e3.getMessage())
+//                                );
+//                            },
+//                            e2 -> dr.setErrorResult(e2.getMessage())
+//                    );
+//
+//                },
+//                e1 -> dr.setErrorResult(e1.getMessage())
+//        );
         return dr;
     }
 }
