@@ -1,6 +1,6 @@
 package com.jerry.study.reactive.asyncrest.completion;
 
-import org.springframework.util.concurrent.ListenableFuture;
+//import org.springframework.util.concurrent.ListenableFuture;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -29,20 +29,20 @@ public class Completion<S, T> {
         return c;
     }
 
-    public <V> Completion<T, V> andApply(Function<T, ListenableFuture<V>> fn) {
-        Completion<T, V> c = new AsyncCompletion<>(fn);
-        this.next = c;
-        return c;
-    }
-
-    public static <S, T> Completion<S, T> from(ListenableFuture<T> f) {
-        Completion<S, T> completion = new Completion<>();
-        f.addCallback(
-                completion::complete,
-                completion::error
-        );
-        return completion;
-    }
+//    public <V> Completion<T, V> andApply(Function<T, ListenableFuture<V>> fn) {
+//        Completion<T, V> c = new AsyncCompletion<>(fn);
+//        this.next = c;
+//        return c;
+//    }
+//
+//    public static <S, T> Completion<S, T> from(ListenableFuture<T> f) {
+//        Completion<S, T> completion = new Completion<>();
+//        f.addCallback(
+//                completion::complete,
+//                completion::error
+//        );
+//        return completion;
+//    }
 
     void complete(T s) {
         if (next != null) {
