@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 @Slf4j
@@ -11,6 +13,11 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 @SpringBootApplication
 public class ReactiveApplication {
+
+    @Bean
+    NettyReactiveWebServerFactory nettyReactiveWebServerFactory() {
+        return new NettyReactiveWebServerFactory();
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(ReactiveApplication.class, args);
